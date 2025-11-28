@@ -10,13 +10,14 @@ import (
 	"strings"
 )
 
-const debug = true
+const debug = false
 
 type EmojiData struct {
 	SupportSize []struct {
 		Width, Height int
 	} `json:"supportSize"`
 	Name string `json:"name"`
+	Mark string `json:"mark"`
 	Imgs []struct {
 		ID, Name string
 	} `json:"imgs"`
@@ -64,7 +65,7 @@ func extractID(input string) string {
 
 // downloadEmoji 下载表情包
 func downloadEmoji(id string) {
-	jsonURL := fmt.Sprintf("https://gxh.vip.qq.com/club/item/parcel/%s/%s_android.json", id[len(id)-1:], id)
+	jsonURL := fmt.Sprintf("https://gxh.vip.qq.com/club/item/parcel/%s/%s.json", id[len(id)-1:], id)
 	if debug {
 		fmt.Println("JSON 链接:", jsonURL)
 	}
@@ -86,7 +87,11 @@ func downloadEmoji(id string) {
 	os.Mkdir(saveDir, os.ModePerm)
 
 	height := data.SupportSize[0].Height
+	fmt.Println("名称:", data.Name)
 	fmt.Printf("表情总数: %d，尺寸: %dx%d\n", len(data.Imgs), data.SupportSize[0].Width, height)
+	if data.Mark != "" {
+		fmt.Println("备注:", data.Mark)
+	}
 
 	for idx, img := range data.Imgs {
 		imgURL := fmt.Sprintf("https://gxh.vip.qq.com/club/item/parcel/item/%s/%s/raw%d.gif", img.ID[:2], img.ID, height)
